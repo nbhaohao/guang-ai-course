@@ -1,0 +1,19 @@
+{
+  "name": "rag-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@langchain/classic": "^1.0.32",
+    "@langchain/core": "^1.1.42",
+    "@langchain/openai": "^1.4.5",
+    "dotenv": "^17.4.2"
+  }
+}
