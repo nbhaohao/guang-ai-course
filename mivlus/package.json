@@ -1,0 +1,10 @@
+{
+	"scripts": {
+		"start": "node --env-file=../.env insert.mjs"
+	},
+	"dependencies": {
+		"@langchain/openai": "^1.4.5",
+		"@zilliz/milvus2-sdk-node": "^2.6.14",
+		"dotenv": "^17.4.2"
+	}
+}
