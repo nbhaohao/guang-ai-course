@@ -1,5 +1,5 @@
 import {MilvusClient, DataType, MetricType, IndexType} from '@zilliz/milvus2-sdk-node';
-import {OpenAIEmbeddings} from "@langchain/openai";
+import {ChatOpenAI, OpenAIEmbeddings} from "@langchain/openai";
 
 // ============================================================
 // DOMAIN LAYER  领域层
@@ -41,12 +41,34 @@ export class EmbeddingService {
     async embed(text) { throw new Error('Not implemented'); }
 }
 
+// LLM 服务接口 — 领域层只知道"能问问题、得到回答"，不关心用哪个模型
+export class LLMService {
+    async chat(prompt) { throw new Error('Not implemented'); }
+}
+
 // ============================================================
 // INFRASTRUCTURE LAYER  基础设施层
 // ============================================================
 
 export const COLLECTION_NAME = 'ai_diary';
 export const VECTOR_DIM = 1024;
+
+export class OpenAIChatService extends LLMService {
+    constructor() {
+        super();
+        this._model = new ChatOpenAI({
+            temperature: 0.7,
+            model: process.env.MODEL_NAME,
+            apiKey: process.env.OPENAI_API_KEY,
+            configuration: {baseURL: process.env.OPENAI_BASE_URL}
+        });
+    }
+
+    async chat(prompt) {
+        const response = await this._model.invoke(prompt);
+        return response.content;
+    }
+}
 
 export class OpenAIEmbeddingService extends EmbeddingService {
     constructor() {
