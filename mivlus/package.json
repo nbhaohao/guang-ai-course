@@ -1,6 +1,7 @@
 {
 	"scripts": {
-		"start": "node --env-file=../.env insert.mjs"
+		"start": "node --env-file=../.env insert.mjs",
+		"query": "node --env-file=../.env query.mjs"
 	},
 	"dependencies": {
 		"@langchain/openai": "^1.4.5",
