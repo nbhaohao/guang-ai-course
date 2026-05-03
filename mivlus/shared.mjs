@@ -169,3 +169,100 @@ export async function createConnectedMilvusClient() {
     await client.connectPromise;
     return client;
 }
+
+// ============================================================
+// DOMAIN LAYER — 电子书
+// ============================================================
+
+// 实体
+export class EBookChunk {
+    constructor({id, book_id, book_name, chapter_num, index, content}) {
+        this.id          = id;
+        this.book_id     = book_id;
+        this.book_name   = book_name;
+        this.chapter_num = chapter_num;
+        this.index       = index;
+        this.content     = content;
+    }
+}
+
+// 仓储接口
+export class EBookRepository {
+    async setupStorage()                                          { throw new Error('Not implemented'); }
+    async saveChapterChunks(chunks, bookId, bookName, chapterNum) { throw new Error('Not implemented'); }
+}
+
+// ============================================================
+// INFRASTRUCTURE LAYER — 电子书
+// ============================================================
+
+export const EBOOK_COLLECTION_NAME = 'ebook_collection';
+
+export class MilvusEBookRepository extends EBookRepository {
+    constructor(milvusClient, embeddingService) {
+        super();
+        this._client           = milvusClient;
+        this._embeddingService = embeddingService;
+    }
+
+    async setupStorage() {
+        const {value: exists} = await this._client.hasCollection({
+            collection_name: EBOOK_COLLECTION_NAME
+        });
+
+        if (exists) {
+            console.log('✓ Collection already exists');
+        } else {
+            console.log('Creating collection...');
+            await this._client.createCollection({
+                collection_name: EBOOK_COLLECTION_NAME,
+                fields: [
+                    {name: 'id',          data_type: DataType.VarChar,     max_length: 100,  is_primary_key: true},
+                    {name: 'book_id',     data_type: DataType.VarChar,     max_length: 100},
+                    {name: 'book_name',   data_type: DataType.VarChar,     max_length: 200},
+                    {name: 'chapter_num', data_type: DataType.Int32},
+                    {name: 'index',       data_type: DataType.Int32},
+                    {name: 'content',     data_type: DataType.VarChar,     max_length: 10000},
+                    {name: 'vector',      data_type: DataType.FloatVector,  dim: VECTOR_DIM}
+                ]
+            });
+            console.log('✓ Collection created');
+
+            console.log('\nCreating index...');
+            await this._client.createIndex({
+                collection_name: EBOOK_COLLECTION_NAME,
+                field_name:      'vector',
+                index_type:      IndexType.IVF_FLAT,
+                metric_type:     MetricType.COSINE,
+                params:          {nlist: 1024}
+            });
+            console.log('✓ Index created');
+        }
+
+        console.log('\nLoading collection...');
+        await this._client.loadCollection({collection_name: EBOOK_COLLECTION_NAME});
+        console.log('✓ Collection loaded');
+    }
+
+    async saveChapterChunks(chunks, bookId, bookName, chapterNum) {
+        if (chunks.length === 0) return 0;
+
+        const records = await Promise.all(
+            chunks.map(async (chunk, chunkIndex) => ({
+                id:          `${bookId}_${chapterNum}_${chunkIndex}`,
+                book_id:     String(bookId),
+                book_name:   bookName,
+                chapter_num: chapterNum,
+                index:       chunkIndex,
+                content:     chunk,
+                vector:      await this._embeddingService.embed(chunk)
+            }))
+        );
+
+        const result = await this._client.insert({
+            collection_name: EBOOK_COLLECTION_NAME,
+            data:            records
+        });
+        return Number(result.insert_cnt) || 0;
+    }
+}
