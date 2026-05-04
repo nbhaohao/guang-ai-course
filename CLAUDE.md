@@ -92,14 +92,18 @@ pnpm docker:health  # 检查 Milvus 健康状态
 | `shared.mjs` | 对话域领域模型 + 基础设施实现 |
 | `history-test.mjs` | 多轮对话（InMemory 记忆）演示 |
 | `file-history-test.mjs` | 多轮对话（FileSystem 持久化记忆）演示 |
+| `truncation-test.mjs` | 消息截断策略演示（按条数 / 按 token 数）|
 
 ### shared.mjs 领域模型速览
 
 - `ConversationTurn` — 值对象（一条对话消息）
 - `MessageHistoryRepository` — 历史记录仓储接口
 - `LLMService` — LLM 服务接口
+- `TruncationStrategy` — 截断策略接口
 - `InMemoryMessageHistoryAdapter` — 基于 LangChain `InMemoryChatMessageHistory` 的实现
 - `FileSystemMessageHistoryAdapter` — 基于 LangChain `FileSystemChatMessageHistory` 的实现，构造参数 `(filePath, sessionId)`，持久化到 JSON 文件，支持多会话共存
+- `MessageCountTruncationStrategy` — 按消息条数截断，构造参数 `(maxMessages)`
+- `TokenCountTruncationStrategy` — 按 token 数截断，构造参数 `(maxTokens, encodingName?)`，使用 `js-tiktoken` 计数 + LangChain `trimMessages`，提供 `tokenCount(message)` 辅助方法
 - `OpenAIChatService` — 基于 `ChatOpenAI` 的实现
 
 ### 启动命令
@@ -107,6 +111,7 @@ pnpm docker:health  # 检查 Milvus 健康状态
 ```bash
 pnpm history        # 多轮对话 InMemory 记忆演示
 pnpm file-history   # 多轮对话 FileSystem 持久化记忆演示
+pnpm truncation     # 消息截断策略演示（按条数 / 按 token 数）
 ```
 
 ---
