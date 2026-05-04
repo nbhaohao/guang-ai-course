@@ -5,6 +5,7 @@
     "rag": "node --env-file=../.env rag.mjs",
     "insert-ebook": "node --env-file=../.env insert-ebook.mjs",
     "query-ebook": "node --env-file=../.env ebook-query.mjs",
+    "rag-ebook": "node --env-file=../.env ebook-rag.mjs",
     "docker:up": "docker compose -f ./milvus-standalone-docker-compose.yml up -d",
     "docker:health": "curl -sf http://localhost:9091/healthz && echo 'Milvus is healthy' || echo 'Milvus is not ready'"
   },
