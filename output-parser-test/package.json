@@ -1,0 +1,22 @@
+{
+  "name": "output-parser-test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "json-output": "node --env-file=../.env json-output.mjs",
+    "json-parser": "node --env-file=../.env json-parser.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.33.2",
+  "dependencies": {
+    "@langchain/core": "^1.1.44",
+    "@langchain/openai": "^1.4.5",
+    "chalk": "^5.6.2",
+    "dotenv": "^17.4.2",
+    "zod": "^4.4.3"
+  }
+}
