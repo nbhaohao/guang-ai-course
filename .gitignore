@@ -146,3 +146,4 @@ vite.config.ts.timestamp-*
 
 mivlus/volumes
 *.epub
+chat_history.json

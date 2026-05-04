@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "history": "node --env-file=../.env history-test.mjs"
+    "history": "node --env-file=../.env history-test.mjs",
+    "file-history": "node --env-file=../.env file-history-test.mjs"
   },
   "keywords": [],
   "author": "",

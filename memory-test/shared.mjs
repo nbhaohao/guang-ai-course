@@ -1,6 +1,7 @@
 import { ChatOpenAI } from '@langchain/openai';
 import { InMemoryChatMessageHistory } from '@langchain/core/chat_history';
 import { HumanMessage, SystemMessage } from '@langchain/core/messages';
+import { FileSystemChatMessageHistory } from '@langchain/community/stores/message/file_system';
 
 // ============================================================
 // DOMAIN LAYER  领域层
@@ -34,6 +35,30 @@ export class InMemoryMessageHistoryAdapter extends MessageHistoryRepository {
     constructor() {
         super();
         this._history = new InMemoryChatMessageHistory();
+    }
+
+    async addUserMessage(content) {
+        await this._history.addMessage(new HumanMessage(content));
+    }
+
+    async addAssistantMessage(message) {
+        await this._history.addMessage(message);
+    }
+
+    async getAll() {
+        return this._history.getMessages();
+    }
+}
+
+export class FileSystemMessageHistoryAdapter extends MessageHistoryRepository {
+    /**
+     * @param {string} filePath  JSON 文件路径
+     * @param {string} sessionId 会话标识，支持多会话共存于同一文件
+     */
+    constructor(filePath, sessionId) {
+        super();
+        this._history = new FileSystemChatMessageHistory({ filePath, sessionId });
+        this.filePath = filePath;
     }
 
     async addUserMessage(content) {

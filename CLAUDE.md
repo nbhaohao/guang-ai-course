@@ -91,6 +91,7 @@ pnpm docker:health  # 检查 Milvus 健康状态
 |---|---|
 | `shared.mjs` | 对话域领域模型 + 基础设施实现 |
 | `history-test.mjs` | 多轮对话（InMemory 记忆）演示 |
+| `file-history-test.mjs` | 多轮对话（FileSystem 持久化记忆）演示 |
 
 ### shared.mjs 领域模型速览
 
@@ -98,12 +99,14 @@ pnpm docker:health  # 检查 Milvus 健康状态
 - `MessageHistoryRepository` — 历史记录仓储接口
 - `LLMService` — LLM 服务接口
 - `InMemoryMessageHistoryAdapter` — 基于 LangChain `InMemoryChatMessageHistory` 的实现
+- `FileSystemMessageHistoryAdapter` — 基于 LangChain `FileSystemChatMessageHistory` 的实现，构造参数 `(filePath, sessionId)`，持久化到 JSON 文件，支持多会话共存
 - `OpenAIChatService` — 基于 `ChatOpenAI` 的实现
 
 ### 启动命令
 
 ```bash
-pnpm history   # 多轮对话 InMemory 记忆演示
+pnpm history        # 多轮对话 InMemory 记忆演示
+pnpm file-history   # 多轮对话 FileSystem 持久化记忆演示
 ```
 
 ---
