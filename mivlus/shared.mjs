@@ -186,10 +186,23 @@ export class EBookChunk {
     }
 }
 
+// 值对象
+export class EBookSearchResult {
+    constructor({score, id, book_id, chapter_num, index, content}) {
+        this.score       = score;
+        this.id          = id;
+        this.book_id     = book_id;
+        this.chapter_num = chapter_num;
+        this.index       = index;
+        this.content     = content;
+    }
+}
+
 // 仓储接口
 export class EBookRepository {
     async setupStorage()                                          { throw new Error('Not implemented'); }
     async saveChapterChunks(chunks, bookId, bookName, chapterNum) { throw new Error('Not implemented'); }
+    async search(queryText, limit)                                { throw new Error('Not implemented'); }
 }
 
 // ============================================================
@@ -264,5 +277,23 @@ export class MilvusEBookRepository extends EBookRepository {
             data:            records
         });
         return Number(result.insert_cnt) || 0;
+    }
+
+    async search(queryText, limit = 3) {
+        try {
+            await this._client.loadCollection({collection_name: EBOOK_COLLECTION_NAME});
+        } catch (error) {
+            if (!error.message.includes('already loaded')) throw error;
+        }
+
+        const queryVector = await this._embeddingService.embed(queryText);
+        const result = await this._client.search({
+            collection_name: EBOOK_COLLECTION_NAME,
+            vector:          queryVector,
+            limit,
+            metric_type:     MetricType.COSINE,
+            output_fields:   ['id', 'book_id', 'chapter_num', 'index', 'content']
+        });
+        return result.results.map(item => new EBookSearchResult(item));
     }
 }

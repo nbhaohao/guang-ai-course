@@ -1,19 +1,20 @@
 {
-	"scripts": {
-		"start": "node --env-file=../.env insert.mjs",
-		"query": "node --env-file=../.env query.mjs",
-		"rag": "node --env-file=../.env rag.mjs",
-		"insert-ebook": "node --env-file=../.env insert-ebook.mjs",
-		"docker:up": "docker compose -f ./milvus-standalone-docker-compose.yml up -d",
-		"docker:health": "curl -sf http://localhost:9091/healthz && echo 'Milvus is healthy' || echo 'Milvus is not ready'"
-	},
-	"dependencies": {
-		"@langchain/community": "^1.1.27",
-		"@langchain/openai": "^1.4.5",
-		"@langchain/textsplitters": "^1.0.1",
-		"@zilliz/milvus2-sdk-node": "^2.6.14",
-		"dotenv": "^17.4.2",
-		"epub2": "^3.0.2",
-		"html-to-text": "^9.0.5"
-	}
+  "scripts": {
+    "start": "node --env-file=../.env insert.mjs",
+    "query": "node --env-file=../.env query.mjs",
+    "rag": "node --env-file=../.env rag.mjs",
+    "insert-ebook": "node --env-file=../.env insert-ebook.mjs",
+    "query-ebook": "node --env-file=../.env ebook-query.mjs",
+    "docker:up": "docker compose -f ./milvus-standalone-docker-compose.yml up -d",
+    "docker:health": "curl -sf http://localhost:9091/healthz && echo 'Milvus is healthy' || echo 'Milvus is not ready'"
+  },
+  "dependencies": {
+    "@langchain/community": "^1.1.27",
+    "@langchain/openai": "^1.4.5",
+    "@langchain/textsplitters": "^1.0.1",
+    "@zilliz/milvus2-sdk-node": "^2.6.14",
+    "dotenv": "^17.4.2",
+    "epub2": "^3.0.2",
+    "html-to-text": "^9.0.5"
+  }
 }
