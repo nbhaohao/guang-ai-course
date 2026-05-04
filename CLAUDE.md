@@ -93,25 +93,43 @@ pnpm docker:health  # 检查 Milvus 健康状态
 | `history-test.mjs` | 多轮对话（InMemory 记忆）演示 |
 | `file-history-test.mjs` | 多轮对话（FileSystem 持久化记忆）演示 |
 | `truncation-test.mjs` | 消息截断策略演示（按条数 / 按 token 数）|
+| `summarization-test.mjs` | 消息总结策略演示（超过阈值时用 LLM 总结旧消息）|
+| `insert-milvus-memory.mjs` | 将种子对话写入 Milvus 向量库（需先运行）|
+| `query-milvus-memory.mjs` | 检索增强记忆（RAG Memory）演示 |
 
 ### shared.mjs 领域模型速览
 
+**消息历史域：**
 - `ConversationTurn` — 值对象（一条对话消息）
-- `MessageHistoryRepository` — 历史记录仓储接口
-- `LLMService` — LLM 服务接口
+- `MessageHistoryRepository` — 历史记录仓储接口（含 `clear()`）
+- `LLMService` — LLM 服务接口（含 `chat(systemPrompt, messages)` 和 `invoke(messages)`）
 - `TruncationStrategy` — 截断策略接口
+- `SummarizationStrategy` — 总结策略接口
 - `InMemoryMessageHistoryAdapter` — 基于 LangChain `InMemoryChatMessageHistory` 的实现
-- `FileSystemMessageHistoryAdapter` — 基于 LangChain `FileSystemChatMessageHistory` 的实现，构造参数 `(filePath, sessionId)`，持久化到 JSON 文件，支持多会话共存
+- `FileSystemMessageHistoryAdapter` — 基于 LangChain `FileSystemChatMessageHistory` 的实现，构造参数 `(filePath, sessionId)`
 - `MessageCountTruncationStrategy` — 按消息条数截断，构造参数 `(maxMessages)`
-- `TokenCountTruncationStrategy` — 按 token 数截断，构造参数 `(maxTokens, encodingName?)`，使用 `js-tiktoken` 计数 + LangChain `trimMessages`，提供 `tokenCount(message)` 辅助方法
+- `TokenCountTruncationStrategy` — 按 token 数截断，构造参数 `(maxTokens, encodingName?)`，提供 `tokenCount(message)` 辅助方法
+- `LLMSummarizationStrategy` — 使用 `LLMService` + `getBufferString` 对旧消息生成摘要，构造参数 `(llmService)`
 - `OpenAIChatService` — 基于 `ChatOpenAI` 的实现
+
+**对话向量存储域：**
+- `ConversationRecord` — 实体（id / content / round / timestamp）
+- `ConversationSearchResult` — 值对象（含 score）
+- `EmbeddingService` — 嵌入服务接口
+- `ConversationVectorRepository` — 向量仓储接口（`setupStorage` / `saveAll` / `save` / `search`）
+- `OpenAIEmbeddingService` — 嵌入服务实现
+- `MilvusConversationRepository` — Milvus 向量仓储实现，集合名 `conversations`
+- `createConnectedMilvusClient()` — 工厂函数
 
 ### 启动命令
 
 ```bash
-pnpm history        # 多轮对话 InMemory 记忆演示
-pnpm file-history   # 多轮对话 FileSystem 持久化记忆演示
-pnpm truncation     # 消息截断策略演示（按条数 / 按 token 数）
+pnpm history          # 多轮对话 InMemory 记忆演示
+pnpm file-history     # 多轮对话 FileSystem 持久化记忆演示
+pnpm truncation       # 消息截断策略演示（按条数 / 按 token 数）
+pnpm summarization    # 消息总结策略演示（超过阈值时用 LLM 总结旧消息）
+pnpm insert-milvus    # 写入种子对话到 Milvus（首次运行前先执行）
+pnpm query-milvus     # 检索增强记忆演示（RAG Memory）
 ```
 
 ---
