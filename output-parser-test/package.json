@@ -6,7 +6,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "json-output": "node --env-file=../.env json-output.mjs",
-    "json-parser": "node --env-file=../.env json-parser.mjs"
+    "json-parser": "node --env-file=../.env json-parser.mjs",
+    "structured-parser": "node --env-file=../.env structured-parser.mjs",
+    "zod-parser": "node --env-file=../.env zod-parser.mjs",
+    "stream-parser": "node --env-file=../.env stream-parser.mjs"
   },
   "keywords": [],
   "author": "",
