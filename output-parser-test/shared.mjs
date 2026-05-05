@@ -9,6 +9,14 @@ export class LLMService {
   async *stream(prompt) {
     throw new Error('Not implemented');
   }
+  /**
+   * @param {string} prompt
+   * @param {{ name: string, description: string, schema: import('zod').ZodObject<any> }} toolDef
+   * @returns {AsyncIterable<{ type: string, args: unknown }>}
+   */
+  async *streamToolCall(prompt, toolDef) {
+    throw new Error('Not implemented');
+  }
 }
 
 export class OutputParser {
@@ -26,6 +34,7 @@ export class OutputParser {
 
 import { ChatOpenAI } from '@langchain/openai';
 import { JsonOutputParser, StructuredOutputParser } from '@langchain/core/output_parsers';
+import { JsonOutputToolsParser } from '@langchain/core/output_parsers/openai_tools';
 
 export class OpenAIChatService extends LLMService {
   constructor() {
@@ -49,6 +58,14 @@ export class OpenAIChatService extends LLMService {
     const stream = await this._model.stream(prompt);
     for await (const chunk of stream) {
       yield chunk.content;
+    }
+  }
+
+  async *streamToolCall(prompt, toolDef) {
+    const chain = this._model.bindTools([toolDef]).pipe(new JsonOutputToolsParser());
+    const stream = await chain.stream(prompt);
+    for await (const chunk of stream) {
+      if (chunk.length > 0) yield chunk[0];
     }
   }
 }

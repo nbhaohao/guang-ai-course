@@ -9,7 +9,8 @@
     "json-parser": "node --env-file=../.env json-parser.mjs",
     "structured-parser": "node --env-file=../.env structured-parser.mjs",
     "zod-parser": "node --env-file=../.env zod-parser.mjs",
-    "stream-parser": "node --env-file=../.env stream-parser.mjs"
+    "stream-parser": "node --env-file=../.env stream-parser.mjs",
+    "tool-parser": "node --env-file=../.env tool-parser.mjs"
   },
   "keywords": [],
   "author": "",
